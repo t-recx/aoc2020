@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-def valid(key, value) 
+def valid?(key, value) 
     if key == 'byr'
-        value.to_i.between?(1920, 2002)
+        value.to_i.between? 1920, 2002
     elsif key == 'iyr'
-        value.to_i.between?(2010, 2020)
+        value.to_i.between? 2010, 2020
     elsif key == 'eyr'
-        value.to_i.between?(2020, 2030)
+        value.to_i.between? 2020, 2030
     elsif key == 'hgt'
         return value.to_i.between?(150, 193) if value.end_with? 'cm'
         return value.to_i.between?(59, 76) if value.end_with? 'in'
@@ -27,5 +27,5 @@ puts File
     .read(ARGV[0])
     .split("\n\n")
     .select { |line| ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'].all? { |key| line.include? key } }
-    .select { |line| line.split(' ').all? { |kvp| valid(*kvp.split(':')) } }
+    .select { |line| line.split.all? { |kvp| valid?(*kvp.split(':')) } }
     .count()
