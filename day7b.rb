@@ -13,7 +13,7 @@ def bag_number(input, allowed, times)
         } 
         .reject { |t, c| t == 'no' }
         .map { |t, c| times * bag_number(input, c, t.to_i) }
-        .reduce(0, :+)
+        .sum
 end
 
 input = File.readlines(ARGV[0]).map(&:strip)
