@@ -1,22 +1,19 @@
 #!/usr/bin/env ruby
 
 def bag_number(input, allowed, times)
-    a = input
+    times + 
+        input
         .map { |line| line.split(' bags contain') }
         .map { |color, rules| [color, rules.split(',')] }
         .select { |color, rules| color == allowed }
         .flat_map { |color, rules|  
             rules
             .map { |r| r.split(' ', 2) }
-            .map { |n, cc| [n, cc.split(' bag')[0]] } 
+            .map { |t, rc| [t, rc.split(' bag')[0]] } 
         } 
-        .select { |t, c| t != 'no' }
-
-    if (a.length > 0) 
-        return times + a.map { |t, c| times * bag_number(input, c, t.to_i) }.reduce(:+)
-    end
-
-    return times
+        .reject { |t, c| t == 'no' }
+        .map { |t, c| times * bag_number(input, c, t.to_i) }
+        .reduce(0, :+)
 end
 
 input = File.readlines(ARGV[0]).map(&:strip)
