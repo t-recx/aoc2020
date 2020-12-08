@@ -3,11 +3,13 @@
 def execute(instruction, cur, acc)
     tokens = instruction.split
 
-    if tokens[0] == 'acc'
-        acc += tokens[1].to_i
-    elsif tokens[0] == 'jmp'
-        cur += tokens[1].to_i
+    if tokens[0] == 'jmp'
+        cur += tokens[1].to_i()
+    else
+        cur += 1
     end
+
+    acc += tokens[1].to_i if tokens[0] == 'acc'
 
     [cur, acc]
 end
@@ -17,9 +19,7 @@ def try_program(program)
     cur, acc = 0, 0
 
     loop do
-        new_cur, acc = execute(program[cur], cur, acc)
-
-        cur = new_cur == cur ? cur + 1 : new_cur
+        cur, acc = execute(program[cur], cur, acc)
 
         break unless program[cur]
 
