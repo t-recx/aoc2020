@@ -45,9 +45,7 @@ original_program.each_with_index do |line, i|
             new_line = line.sub('jmp', 'nop')
         end
 
-        changed_program = previous_instructions + [new_line] + original_program[i+1..-1]
-
-        acc = try_program(changed_program)
+        acc = try_program(previous_instructions + [new_line] + original_program[i+1..-1])
 
         return p acc if acc
     end
