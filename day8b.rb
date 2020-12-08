@@ -49,9 +49,7 @@ original_program.each_with_index do |line, i|
 
         acc = try_program(changed_program)
 
-        if acc
-            return p acc
-        end
+        return p acc if acc
     end
 
     previous_instructions.push(line)
