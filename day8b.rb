@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 
 def execute(instruction, cur, acc)
-    tokens = instruction.split
+    op, arg = instruction.split
 
-    if tokens[0] == 'jmp'
-        cur += tokens[1].to_i()
+    if op == 'jmp'
+        cur += arg.to_i
     else
         cur += 1
     end
 
-    acc += tokens[1].to_i if tokens[0] == 'acc'
+    acc += arg.to_i if op == 'acc'
 
     [cur, acc]
 end
@@ -23,7 +23,7 @@ def try_program(program)
 
         break unless program[cur]
 
-        return if (executed.include? cur)
+        return if executed.include? cur
 
         executed.push(cur)
     end
