@@ -3,8 +3,6 @@
 def bag_number(input, allowed, times)
     times + 
         input
-        .map { |line| line.split(' bags contain') }
-        .map { |color, rules| [color, rules.split(',')] }
         .select { |color, rules| color == allowed }
         .flat_map { |color, rules|  
             rules
@@ -17,5 +15,7 @@ def bag_number(input, allowed, times)
 end
 
 input = File.readlines(ARGV[0]).map(&:strip)
+        .map { |line| line.split(' bags contain') }
+        .map { |color, rules| [color, rules.split(',')] }
 
 p bag_number(input, 'shiny gold', 1) - 1
