@@ -1,16 +1,13 @@
 #!/usr/bin/env ruby
 
 def direction_occupied?(seats, x, y, inc_x, inc_y)
-    xx, yy = x, y
-    width = seats.first.size
-
     loop do
-        xx += inc_x
-        yy += inc_y 
+        x += inc_x
+        y += inc_y 
 
-        break if xx < 0 or yy < 0 or xx >= width or not seats[yy] or seats[yy][xx] == 'L'
+        break if x < 0 or y < 0 or not seats[y] or not seats[y][x] or seats[y][x] == 'L'
 
-        return true if seats[yy][xx] == '#'
+        return true if seats[y][x] == '#'
     end
 end
 
