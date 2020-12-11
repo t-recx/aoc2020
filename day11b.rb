@@ -23,21 +23,17 @@ end
 input = File.readlines(ARGV[0]).map(&:strip).map { |line| line.chars }
 
 loop do
-    output = input.map(&:dup)
-
-    (0..input.size-1).each do |y|
-        (0..input.first.size-1).each do |x|
-            if input[y][x] != '.'
-                occupied_adjacent = occupied_number(input, x, y) 
-
-                if input[y][x] == 'L' and occupied_adjacent == 0
-                    output[y][x] = '#'
-                elsif input[y][x] == '#' and occupied_adjacent >= 5
-                    output[y][x] = 'L'
-                end
+    output = input.each_with_index.map { |l, y|
+        l.each_with_index.map { |s, x|
+            if s== 'L' and occupied_number(input, x, y) == 0
+                '#'
+            elsif s== '#' and occupied_number(input, x, y) >= 5
+                'L'
+            else
+                s
             end
-        end
-    end
+        }
+    }
 
     break if input == output
 
