@@ -27,4 +27,4 @@ loop do
     input = output
 end
 
-p input.to_s.count('#')
+p input.flatten.count('#')
