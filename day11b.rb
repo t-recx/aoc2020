@@ -40,4 +40,4 @@ loop do
     input = output
 end
 
-p input.flat_map { |x| x }.select { |x| x == '#' }.count
+p input.to_s.count('#')

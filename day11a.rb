@@ -2,8 +2,8 @@
 
 def occupied_number(seats, x, y)
     [[x-1,y],[x+1,y],[x,y-1],[x,y+1],[x-1,y-1],[x-1,y+1],[x+1,y-1],[x+1,y+1]]
-    .reject { |xx, yy| xx < 0 || yy < 0 }
-    .select { |xx, yy| seats[yy] and seats[yy][xx] == '#' }
+    .reject { |xx, yy| xx < 0 || yy < 0 || !seats[yy] }
+    .select { |xx, yy| seats[yy][xx] == '#' }
     .count
 end 
 
@@ -27,4 +27,4 @@ loop do
     input = output
 end
 
-p input.flat_map { |x| x }.select { |x| x == '#' }.count
+p input.to_s.count('#')
