@@ -20,7 +20,7 @@ def occupied_number(seats, x, y)
     .count
 end 
 
-input = File.readlines(ARGV[0]).map(&:strip).map { |line| line.chars }
+input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
 
 loop do
     output = input.each_with_index.map { |l, y|
