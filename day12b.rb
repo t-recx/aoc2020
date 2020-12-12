@@ -1,47 +1,26 @@
 #!/usr/bin/env ruby
 
-def get_coordinates(action, value, x, y)
-    if action == :N
-        y -= value;
-    elsif action == :S
-        y += value;
-    elsif action == :E
-        x += value;
-    elsif action == :W
-        x -= value;
-    end
+x, y, wx, wy = 0, 0, 10, -1
 
-    [x,y]
-end
-
-def rotate(action, value, wx, wy)
-    rotations = value / 90
-
-    rotations.times do 
-        if action == :R
-            wx, wy = -wy, wx
-        elsif action == :L
-            wx, wy = wy, -wx
-        end
-    end
-
-    [wx, wy]
-end
-
-input = File.readlines(ARGV[0]).map(&:strip).map { |x| [x[0].to_sym, x[1..-1].to_i] }
-
-x, y = 0, 0
-wx, wy = 10, -1
-
-input.each do |action, value|
-    if action == :L or action == :R
-        wx, wy = rotate(action, value, wx, wy)
-    elsif action == :F
+File.readlines(ARGV[0]).map(&:strip)
+.map { |x| [x[0], x[1..-1].to_i] }
+.each do |action, value|
+    if action == 'L'
+        (value / 90).times { wx, wy = wy, -wx}
+    elsif action == 'R'
+        (value / 90).times { wx, wy = -wy, wx}
+    elsif action == 'N'
+        wy -= value;
+    elsif action == 'S'
+        wy += value;
+    elsif action == 'E'
+        wx += value;
+    elsif action == 'W'
+        wx -= value;
+    else
         x += wx * value
         y += wy * value
-    else
-        wx, wy = get_coordinates(action, value, wx, wy)    
     end
 end
 
-p x.abs+y.abs
+p x.abs + y.abs
