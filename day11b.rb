@@ -13,8 +13,7 @@ end
 
 def occupied_number(seats, x, y)
     [[1,0],[-1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]]
-    .select{ |xx, yy| direction_occupied?(seats, x, y, xx, yy) }
-    .count
+    .count { |ix, iy| direction_occupied?(seats, x, y, ix, iy) }
 end 
 
 input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
@@ -22,9 +21,9 @@ input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
 loop do
     output = input.each_with_index.map { |l, y|
         l.each_with_index.map { |s, x|
-            if s== 'L' and occupied_number(input, x, y) == 0
+            if s == 'L' and occupied_number(input, x, y) == 0
                 '#'
-            elsif s== '#' and occupied_number(input, x, y) >= 5
+            elsif s == '#' and occupied_number(input, x, y) >= 5
                 'L'
             else
                 s
