@@ -15,7 +15,7 @@ def get_coordinates(action, value, x, y)
 end
 
 def rotate(action, value, wx, wy)
-    rotations = (value / 90) % 4
+    rotations = value / 90
 
     rotations.times do 
         if action == :R
