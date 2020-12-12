@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-def direction_occupied?(seats, x, y, inc_x, inc_y)
+def occupied?(seats, x, y, inc_x, inc_y)
     loop do
         x += inc_x
         y += inc_y 
@@ -11,19 +11,16 @@ def direction_occupied?(seats, x, y, inc_x, inc_y)
     end
 end
 
-def occupied_number(seats, x, y)
-    [[1,0],[-1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]]
-    .count { |ix, iy| direction_occupied?(seats, x, y, ix, iy) }
-end 
+directions = [[1,0],[-1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]]
 
 input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
 
 loop do
     output = input.each_with_index.map { |l, y|
         l.each_with_index.map { |s, x|
-            if s == 'L' and occupied_number(input, x, y) == 0
+            if s == 'L' and directions.count { |ix, iy| occupied?(input, x, y, ix, iy) } == 0
                 '#'
-            elsif s == '#' and occupied_number(input, x, y) >= 5
+            elsif s == '#' and directions.count { |ix, iy| occupied?(input, x, y, ix, iy) } >= 5
                 'L'
             else
                 s
