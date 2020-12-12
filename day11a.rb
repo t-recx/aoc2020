@@ -3,8 +3,7 @@
 def occupied_number(seats, x, y)
     [[x-1,y],[x+1,y],[x,y-1],[x,y+1],[x-1,y-1],[x-1,y+1],[x+1,y-1],[x+1,y+1]]
     .reject { |xx, yy| xx < 0 || yy < 0 || !seats[yy] }
-    .select { |xx, yy| seats[yy][xx] == '#' }
-    .count
+    .count { |xx, yy| seats[yy][xx] == '#' }
 end 
 
 input = File.readlines(ARGV[0]).map(&:strip).map(&:chars)
