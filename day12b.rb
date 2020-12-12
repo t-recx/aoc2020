@@ -14,7 +14,7 @@ def get_coordinates(action, value, x, y)
     [x,y]
 end
 
-def apply_angle(action, value, wx, wy)
+def rotate(action, value, wx, wy)
     rotations = (value / 90) % 4
 
     rotations.times do 
@@ -34,10 +34,8 @@ x, y = 0, 0
 wx, wy = 10, -1
 
 input.each do |action, value|
-    if action == :L
-        wx, wy = apply_angle(action, value, wx, wy)
-    elsif action == :R
-        wx, wy = apply_angle(action, value, wx, wy)
+    if action == :L or action == :R
+        wx, wy = rotate(action, value, wx, wy)
     elsif action == :F
         x += wx * value
         y += wy * value
