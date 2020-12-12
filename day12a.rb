@@ -32,4 +32,4 @@ input.each do |action, value|
     end
 end
 
-p [x, y, x.abs+y.abs]
+p x.abs+y.abs
