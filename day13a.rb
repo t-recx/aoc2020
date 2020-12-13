@@ -8,7 +8,7 @@ ids = lines[1].split(',').reject { |id| id == 'x' }.map { |id| id.to_i }
 
 id, waiting_time = 
     ids
-    .map { |id| [id, id * ((departing_ts / id) + 1) - departing_ts] }
+    .map { |id| [id, id * (departing_ts / id + 1) - departing_ts] }
     .sort_by { |id, waiting_time| waiting_time }
     .first
 
