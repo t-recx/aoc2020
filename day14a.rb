@@ -15,7 +15,7 @@ lines.each do |token, value|
     else
         bits = value.to_i.to_s(2).rjust(36, '0')
 
-        mem[token[4..-2]] = mask.chars.each_with_index.map { |c, i| c == '1' ? bits[i] : c }.join('').to_i(2)
+        mem[token[4..-2]] = mask.chars.each_with_index.map { |c, i| c == '1' ? bits[i] : c }.join.to_i(2)
     end
 end
 
