@@ -30,10 +30,10 @@ lines.each do |token, value|
                     mem_address_iteration[x[1]] = bits[ii] 
                 end
 
-                mem[mem_address_iteration.join('')] = value.to_i
+                mem[mem_address_iteration.join] = value.to_i
             end
         else
-            mem[new_mem_address.join('')] = value.to_i
+            mem[new_mem_address.join] = value.to_i
         end
     end
 end
