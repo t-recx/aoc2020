@@ -19,21 +19,21 @@ lines.each do |token, value|
     else
         mem_address = token[4..-2].to_i.to_s(2).rjust(36, '0')
 
-        new_mem_address = mask.chars.each_with_index.map { |c, i| c == '0' ? mem_address[i] : c == '1' ? '1' : c }.join('')
+        new_mem_address = mask.chars.each_with_index.map { |c, i| c == '0' ? mem_address[i] : c }
 
-        if new_mem_address.include? 'X'         
+        if new_mem_address.any? 'X'         
             n.times do |i|
                 mem_address_iteration = new_mem_address.dup
                 bits = i.to_s(2).rjust(x_count, '0')
 
-                mem_address_iteration.chars.each_with_index.select { |c, _| c == 'X'}.each_with_index do |x, ii|
+                mem_address_iteration.each_with_index.select { |c, _| c == 'X'}.each_with_index do |x, ii|
                     mem_address_iteration[x[1]] = bits[ii] 
                 end
 
-                mem[mem_address_iteration] = value.to_i
+                mem[mem_address_iteration.join('')] = value.to_i
             end
         else
-            mem[new_mem_address] = value.to_i
+            mem[new_mem_address.join('')] = value.to_i
         end
     end
 end
