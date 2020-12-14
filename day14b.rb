@@ -23,16 +23,12 @@ lines.each do |token, value|
 
         if new_mem_address.include? 'X'         
             n.times do |i|
-                mem_address_iteration = new_mem_address
-                ii = 0
-                bits = i.to_s(2).rjust(x_count, '0').reverse
+                mem_address_iteration = new_mem_address.dup
+                bits = i.to_s(2).rjust(x_count, '0')
 
-                mem_address_iteration = mem_address_iteration.reverse
-                mem_address_iteration.chars.each_with_index.select { |c, _| c == 'X'}.each do |_, i|
-                    mem_address_iteration[i] = bits[ii]     
-                    ii += 1 
+                mem_address_iteration.chars.each_with_index.select { |c, _| c == 'X'}.each_with_index do |x, ii|
+                    mem_address_iteration[x[1]] = bits[ii] 
                 end
-                mem_address_iteration = mem_address_iteration.reverse
 
                 mem[mem_address_iteration] = value.to_i
             end
