@@ -14,13 +14,18 @@ input = File
     last_number = memory.keys.last
 
     (part - memory.size).times do |n|
-        if memory[last_number] and memory[last_number][1]
-            new_number = memory[last_number][0] - memory[last_number][1]
+        last_kvp = memory[last_number]
+
+        if last_kvp and last_kvp[1]
+            new_number = last_kvp[0] - last_kvp[1]
         else
             new_number = 0
         end
 
-        memory[new_number] = [turn, memory[new_number] ? memory[new_number][0] : nil]
+        new_kvp = memory[new_number]
+
+        memory[new_number] = [turn, new_kvp ? new_kvp[0] : nil]
+
         last_number = new_number
         turn += 1
     end
