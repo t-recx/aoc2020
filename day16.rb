@@ -9,8 +9,6 @@ rules = input
     .map { |x| x.split(' ') }
     .map { |x| [x[1], x[3]] }
     .map { |a, b| [a.split('-'), b.split('-')] }
-    # .flat_map { |a| a }
-    # .map { |a, b| [a.to_i, b.to_i] }
 
 values = input
     .split("nearby tickets:")[1]
@@ -47,9 +45,6 @@ rules = input
     .map { |x| [x[0], x[1]] }
     .map { |name, rules| [name, rules.split(' ')]}
     .map { |name, rules| [name, rules[0].split('-').map(&:to_i), rules[2].split('-').map(&:to_i)]}
-    #.map { |name, a, b| [name, a.split('-'), b.split('-')] }
-    # .flat_map { |a| a }
-    # .map { |a, b| [a.to_i, b.to_i] }
 
 my_ticket = input.split('your ticket:')[1].strip.split("\n")[0].split(',').map(&:to_i)
 
