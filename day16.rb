@@ -36,15 +36,11 @@ loop do
         rules.each do |name, fc, sc|
             next if rule_column[name]
 
-            if valid_tickets.all? { |ticket| ticket[column].between?(fc[0], fc[1]) or ticket[column].between?(sc[0], sc[1])}
-                if rules
-                    .reject { |x| x[0] == name }
-                    .reject { |x| rule_column.keys.include? x[0] }
-                    .none? { |_, ofc, osc| 
-                        valid_tickets.all? { |ticket| ticket[column].between?(ofc[0], ofc[1]) or ticket[column].between?(osc[0], osc[1])} }
-                    rule_column[name] = column
-                    break
-                end
+            if valid_tickets.all? { |ticket| ticket[column].between?(fc[0], fc[1]) or ticket[column].between?(sc[0], sc[1])} and
+                rules.reject { |x| x[0] == name }.reject { |x| rule_column.keys.include? x[0] }.none? { |_, ofc, osc| 
+                    valid_tickets.all? { |ticket| ticket[column].between?(ofc[0], ofc[1]) or ticket[column].between?(osc[0], osc[1])} }
+                rule_column[name] = column
+                break
             end
         end
     end
