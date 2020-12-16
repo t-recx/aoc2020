@@ -30,7 +30,7 @@ rule_column = {}
 departure_rules = rules.select { |x| x[0].start_with? 'departure'}
 
 loop do
-    (0..rules.size-1).each do |column|
+    rules.size.times do |column|
         next if rule_column.any? { |_, v| v == column}
 
         rules.each do |name, fc, sc|
