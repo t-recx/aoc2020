@@ -58,7 +58,6 @@ valid_tickets = nearby_tickets
 valid_tickets.push my_ticket
 
 rule_column = {}
-available_columns = (0..rules.size-1).to_a
 departure_rules = rules
     .select { |x| x[0].start_with? 'departure'}
 
