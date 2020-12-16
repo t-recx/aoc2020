@@ -11,31 +11,16 @@ rules = input
     .map { |name, rules| [name, rules.split(' ')]}
     .map { |name, rules| [name, rules[0].split('-').map(&:to_i), rules[2].split('-').map(&:to_i)]}
 
-values = input
-    .split("nearby tickets:")[1]
-    .strip
-    .gsub("\n", ",")
-    .split(',')
-    .map(&:to_i)
-
-error_rate = 0
-
-invalid_values = []
-
-values.each do |value|
-    unless rules.any? { |_, fc, sc| value.between? fc[0], fc[1] or value.between? sc[0], sc[1] }
-        error_rate += value 
-        invalid_values.push value
-    end
-end
-
-p error_rate
-
-my_ticket = input.split('your ticket:')[1].strip.split("\n")[0].split(',').map(&:to_i)
-
 nearby_tickets = input
     .split('nearby tickets:')[1].strip.split("\n")
-    .map { |x| x.split(',') }.map { |x| x.map(&:to_i) }
+    .map { |x| x.split(',') }
+    .map { |x| x.map(&:to_i) }
+
+invalid_values = nearby_tickets.flatten.select { |value| rules.none? { |_, fc, sc| value.between? fc[0], fc[1] or value.between? sc[0], sc[1] } }
+
+p invalid_values.sum
+
+my_ticket = input.split('your ticket:')[1].strip.split("\n")[0].split(',').map(&:to_i)
 
 valid_tickets = nearby_tickets.reject { |x| x.any? { |y| invalid_values.include? y }}
 
