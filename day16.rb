@@ -6,9 +6,10 @@ input = File
 rules = input
     .split('your ticket')[0]
     .split("\n")
-    .map { |x| x.split(' ') }
-    .map { |x| [x[1], x[3]] }
-    .map { |a, b| [a.split('-'), b.split('-')] }
+    .map { |x| x.split(':') }
+    .map { |x| [x[0], x[1]] }
+    .map { |name, rules| [name, rules.split(' ')]}
+    .map { |name, rules| [name, rules[0].split('-').map(&:to_i), rules[2].split('-').map(&:to_i)]}
 
 values = input
     .split("nearby tickets:")[1]
@@ -22,15 +23,7 @@ error_rate = 0
 invalid_values = []
 
 values.each do |value|
-    passed = false
-
-    rules.each do |rule|
-        if value.between? rule[0][0].to_i, rule[0][1].to_i or value.between? rule[1][0].to_i, rule[1][1].to_i
-            passed = true
-        end
-    end
-
-    if not passed
+    unless rules.any? { |_, fc, sc| value.between? fc[0], fc[1] or value.between? sc[0], sc[1] }
         error_rate += value 
         invalid_values.push value
     end
@@ -38,28 +31,18 @@ end
 
 p error_rate
 
-rules = input
-    .split('your ticket')[0]
-    .split("\n")
-    .map { |x| x.split(':') }
-    .map { |x| [x[0], x[1]] }
-    .map { |name, rules| [name, rules.split(' ')]}
-    .map { |name, rules| [name, rules[0].split('-').map(&:to_i), rules[2].split('-').map(&:to_i)]}
-
 my_ticket = input.split('your ticket:')[1].strip.split("\n")[0].split(',').map(&:to_i)
 
 nearby_tickets = input
     .split('nearby tickets:')[1].strip.split("\n")
     .map { |x| x.split(',') }.map { |x| x.map(&:to_i) }
 
-valid_tickets = nearby_tickets
-    .reject { |x| x.any? { |y| invalid_values.include? y }}
+valid_tickets = nearby_tickets.reject { |x| x.any? { |y| invalid_values.include? y }}
 
 valid_tickets.push my_ticket
 
 rule_column = {}
-departure_rules = rules
-    .select { |x| x[0].start_with? 'departure'}
+departure_rules = rules.select { |x| x[0].start_with? 'departure'}
 
 loop do
     (0..rules.size-1).each do |column|
