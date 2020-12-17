@@ -45,6 +45,7 @@ end
 
 width = input.first.size
 height = input.size
+count = 0
 
 (1..6).each do |cycle|
     new_board = {}
@@ -61,10 +62,12 @@ height = input.size
                 if board[z] && board[z][y] && board[z][y][x]
                     if neighbours.between? 2, 3
                         new_board[z][y][x] = true
+                        count += 1 if cycle == 6
                     end
                 else
                     if neighbours == 3
                         new_board[z][y][x] = true
+                        count += 1 if cycle == 6
                     end
                 end
             end
@@ -72,23 +75,6 @@ height = input.size
     end
 
     board = new_board
-    
-    p 'cycle: ' + cycle.to_s
-    (-cycle..cycle).each do |z|
-        p 'z = ' + z.to_s
-        (-cycle..height+cycle).each do |y|
-            (-cycle..width+cycle).each do |x|
-                if board[z] and board[z][y] and board[z][y][x]
-                    print '#'
-                else
-                    print '.'
-                end
-            end
-            puts
-        end
-        puts
-    end
-    puts
 end
 
-p board.keys.flat_map { |z| board[z].keys.flat_map { |y| board[z][y].keys.flat_map { |x| board[z][y][x] }}}.count
+p count
