@@ -40,21 +40,25 @@ def get_neighbours(b, bx, by, bz, bw)
 
     count = 0
 
-    ws.each { |w|
-        zs.each { |z|
-            (-1..1).each { |y|
-                (-1..1).each { |x|
-                    unless (z == 0 && x == 0 && y == 0 && w == 0)
-                        if (b[w+bw] && b[w+bw][z+bz] && b[w+bw][z+bz][y+by] && b[w+bw][z+bz][y+by][x+bx])
-                            count += 1
+    ws.each do |w|
+        next unless b[w+bw]
 
-                            return count if count > 3
-                        end
+        zs.each do |z|
+            next unless b[w+bw][z+bz]
+            (-1..1).each do |y|
+                next unless b[w+bw][z+bz][y+by]
+                (-1..1).each do |x|
+                    next unless b[w+bw][z+bz][y+by][x+bx]
+
+                    unless (z == 0 && x == 0 && y == 0 && w == 0)
+                        count += 1
+
+                        return count if count > 3
                     end
-                }
-            }
-        }
-    }
+                end
+            end
+        end
+    end
 
     return count
 end

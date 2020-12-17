@@ -29,18 +29,25 @@ def get_neighbours(b, bx, by, bz)
         zs = (-1..1) 
     end
 
-    return zs.flat_map { |z|
-        (-1..1).flat_map { |y|
-            (-1..1).flat_map { |x|
-                if (z == 0 && x == 0 && y == 0)
-                    false
-                elsif (b[z+bz] && b[z+bz][y+by])
-                    b[z+bz][y+by][x+bx] 
+    count = 0
+
+    zs.each do |z|
+        next unless b[z+bz]
+        (-1..1).each do |y|
+            next unless b[z+bz][y+by]
+            (-1..1).each do |x|
+                next unless b[z+bz][y+by][x+bx]
+
+                unless (z == 0 && x == 0 && y == 0)
+                    count += 1
+
+                    return count if count > 3
                 end
-            }
-        }
-    }
-    .count { |i| i }
+            end
+        end
+    end
+
+    return count
 end
 
 width = input.first.size
