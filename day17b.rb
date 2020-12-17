@@ -38,20 +38,25 @@ def get_neighbours(b, bx, by, bz, bw)
         ws = (-1..1) 
     end
 
-    ws.flat_map { |w|
-            zs.flat_map { |z|
-            (-1..1).flat_map { |y|
-                (-1..1).flat_map { |x|
-                    if (z == 0 && x == 0 && y == 0 && w == 0)
-                        false
-                    elsif (b[w+bw] && b[w+bw][z+bz] && b[w+bw][z+bz][y+by])
-                        b[w+bw][z+bz][y+by][x+bx] 
+    count = 0
+
+    ws.each { |w|
+        zs.each { |z|
+            (-1..1).each { |y|
+                (-1..1).each { |x|
+                    unless (z == 0 && x == 0 && y == 0 && w == 0)
+                        if (b[w+bw] && b[w+bw][z+bz] && b[w+bw][z+bz][y+by] && b[w+bw][z+bz][y+by][x+bx])
+                            count += 1
+
+                            return count if count > 3
+                        end
                     end
                 }
             }
         }
     }
-    .count { |i| i }
+
+    return count
 end
 
 width = input.first.size
@@ -59,28 +64,28 @@ height = input.size
 count = 0
 
 (1..6).each do |cycle|
-    new_board = {}
+    new_board = {} if cycle < 6
 
     (-cycle..cycle).each do |w|
-        new_board[w] = {} unless new_board[w]
-        (-cycle..cycle).each do |z|
-            new_board[w][z] = {} unless new_board[w][z]
+        new_board[w] = {} if cycle < 6 && !new_board[w]
+        (0..cycle).each do |z|
+            new_board[w][z] = {} if cycle < 6 && !new_board[w][z]
 
             (-cycle..height+cycle).each do |y|
                 (-cycle..width+cycle).each do |x|
-                    new_board[w][z][y] = {} unless new_board[w][z][y]
+                    new_board[w][z][y] = {} if cycle < 6 && !new_board[w][z][y]
 
                     neighbours = get_neighbours(board, x, y, z, w)
 
                     if board[w] && board[w][z] && board[w][z][y] && board[w][z][y][x]
                         if neighbours.between? 2, 3
-                            new_board[w][z][y][x] = true
-                            count += 1 if cycle == 6
+                            new_board[w][z][y][x] = true if cycle < 6
+                            count += z > 0 ? 2 : 1 if cycle == 6
                         end
                     else
                         if neighbours == 3
-                            new_board[w][z][y][x] = true
-                            count += 1 if cycle == 6
+                            new_board[w][z][y][x] = true if cycle < 6
+                            count += z > 0 ? 2 : 1 if cycle == 6
                         end
                     end
                 end

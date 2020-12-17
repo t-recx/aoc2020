@@ -50,7 +50,7 @@ count = 0
 (1..6).each do |cycle|
     new_board = {}
 
-    (-cycle..cycle).each do |z|
+    (0..cycle).each do |z|
         new_board[z] = {} unless new_board[z]
 
         (-cycle..height+cycle).each do |y|
@@ -62,12 +62,12 @@ count = 0
                 if board[z] && board[z][y] && board[z][y][x]
                     if neighbours.between? 2, 3
                         new_board[z][y][x] = true
-                        count += 1 if cycle == 6
+                        count += z > 0 ? 2 : 1 if cycle == 6
                     end
                 else
                     if neighbours == 3
                         new_board[z][y][x] = true
-                        count += 1 if cycle == 6
+                        count += z > 0 ? 2 : 1 if cycle == 6
                     end
                 end
             end
