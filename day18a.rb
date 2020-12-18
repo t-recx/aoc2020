@@ -26,18 +26,12 @@ def solve(line)
     loop do
         eop = line.index(')')
 
-        if (eop)
-            expression = line[line[0..eop].rindex('(')..eop]
+        return solve_add_mult(line) unless eop
 
-            line.sub!(expression, solve_add_mult(expression[1..-2]).to_s)
-        else
-            return solve_add_mult(line)
-        end
+        expression = line[line[0..eop].rindex('(')..eop]
+
+        line.sub!(expression, solve_add_mult(expression[1..-2]).to_s)
     end
 end
 
-p File
-    .readlines(ARGV[0])
-    .map(&:strip)
-    .map { |line| solve(line) }
-    .reduce(:+)
+p File.readlines(ARGV[0]).map { |line| solve(line) }.sum
