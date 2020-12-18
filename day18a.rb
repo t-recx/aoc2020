@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-def solve(expression)
+def solve_add_mult(expression)
     value = 0
 
     operator = nil
@@ -22,26 +22,22 @@ def solve(expression)
     return value
 end
 
-lines = File
-    .readlines(ARGV[0])
-    .map(&:strip)
-
-sum = 0
-lines.each do |line|
+def solve(line)
     loop do
         eop = line.index(')')
 
         if (eop)
-            sop = line[0..eop].rindex('(')
+            expression = line[line[0..eop].rindex('(')..eop]
 
-            expression = line[sop..eop]
-
-            line.sub!(expression, solve(expression[1..-2]).to_s)
+            line.sub!(expression, solve_add_mult(expression[1..-2]).to_s)
         else
-            sum += solve(line)
-            break
+            return solve_add_mult(line)
         end
     end
 end
 
-p sum
+p File
+    .readlines(ARGV[0])
+    .map(&:strip)
+    .map { |line| solve(line) }
+    .reduce(:+)
