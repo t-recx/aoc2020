@@ -13,24 +13,16 @@ def solve_op(expression, op)
     end
 end
 
-def solve_add_mult(expression)
-    solve_op(solve_op(expression, '+'), '*')
-end
-
 def solve(line)
     loop do
         eop = line.index(')')
 
-        return solve_add_mult(line).to_i unless eop
+        return solve_op(solve_op(line, '+'), '*').to_i unless eop
 
         expression = line[line[0..eop].rindex('(')..eop]
 
-        line.sub!(expression, solve_add_mult(expression[1..-2]))
+        line.sub!(expression, solve_op(solve_op(expression[1..-2], '+'), '*'))
     end
 end
 
-p File
-    .readlines(ARGV[0])
-    .map(&:strip)
-    .map { |line| solve(line) }
-    .sum
+p File.readlines(ARGV[0]).map { |line| solve(line) }.sum
