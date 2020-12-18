@@ -4,15 +4,12 @@ def solve_op(expression, op)
     loop do
         opi = expression.index(op)
 
-        if opi
-            first = expression[0..opi-1].split[-1]
+        return expression unless opi
 
-            second = expression[opi+1..-1].split(' ', 2)[0]
+        first = expression[0..opi-1].split[-1]
+        second = expression[opi+1..-1].split(' ', 2)[0]
 
-            expression.sub!("#{first} #{op} #{second}", [first, second].map(&:to_i).reduce(op).to_s)
-        else
-            return expression
-        end
+        expression.sub!("#{first} #{op} #{second}", [first, second].map(&:to_i).reduce(op).to_s)
     end
 end
 
@@ -24,13 +21,11 @@ def solve(line)
     loop do
         eop = line.index(')')
 
-        if (eop)
-            expression = line[line[0..eop].rindex('(')..eop]
+        return solve_add_mult(line).to_i unless eop
 
-            line.sub!(expression, solve_add_mult(expression[1..-2]))
-        else
-            return solve_add_mult(line).to_i
-        end
+        expression = line[line[0..eop].rindex('(')..eop]
+
+        line.sub!(expression, solve_add_mult(expression[1..-2]))
     end
 end
 
