@@ -3,19 +3,13 @@
 def solve_add_mult(expression)
     value = 0
 
-    operator = nil
+    op = '+'
 
     expression.split.each do |c|
         if c == '+' or c == '*'
-            operator = c
+            op = c
         else
-            if operator == '+'
-                value = value + c.to_i
-            elsif operator == '*'
-                value = value * c.to_i
-            else
-                value = c.to_i
-            end
+            value = [value, c.to_i].reduce(op)
         end
     end
 
