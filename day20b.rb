@@ -213,17 +213,16 @@ def remove_borders_from_pieces(pieces, tiles)
     return final_image.map { |y, v| v.sort_by { |k, vv| k }.map { |k, vv| vv }.join }
 end
 
-input = File.read(ARGV[0]).split("\n\n").map { |x| x.split("\n") }
-
-tiles = input 
- .map { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
- .to_h { |t, x| [t, [x[0], x[-1], x.map { |y| y.chars[0] }.join, x.map { |y| y.chars[-1] }.join]]}
-
-tiles_pieces = input.to_h { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
-
 sea_monster = [ "                  # ",
                 "#    ##    ##    ###",
                 " #  #  #  #  #  #   "]
+
+input = File.read(ARGV[0]).split("\n\n").map { |x| x.split("\n") }
+
+tiles = input.map { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
+    .to_h { |t, x| [t, [x[0], x[-1], x.map { |y| y.chars[0] }.join, x.map { |y| y.chars[-1] }.join]]}
+
+tiles_pieces = input.to_h { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
 
 final_piece = remove_borders_from_pieces(get_solved_puzzle(tiles, tiles_pieces), tiles)
 
