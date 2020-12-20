@@ -1,16 +1,5 @@
 #!/usr/bin/env ruby
 
-tiles = File.read(ARGV[0])
- .split("\n\n")
- .map { |x| x.split("\n") }
- .map { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
- .to_h { |t, x| [t, [x[0], x[-1], x.map { |y| y.chars[0] }.join, x.map { |y| y.chars[-1] }.join]]}
-
-tiles_pieces = File.read(ARGV[0])
- .split("\n\n")
- .map { |x| x.split("\n") }
- .to_h { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
-
 def check_valid(tile, neighbour, visited)
     visited[tile] = {} if not visited[tile]
     visited[neighbour] = {} if not visited[neighbour]
@@ -21,23 +10,6 @@ def check_valid(tile, neighbour, visited)
     end
 
     return visited[tile][neighbour]
-end
-
-visited = {}
-
-tiles_neighbours = {}
-
-tiles.keys
-.each do |key|
-    tiles_neighbours[key] = [] 
-
-    other_keys = tiles.keys.reject { |k| k == key  }
-
-    other_keys.each do |other_key|
-        if check_valid(tiles[key], tiles[other_key], visited)
-            tiles_neighbours[key].push other_key
-        end
-    end
 end
 
 def mirror(piece)
@@ -64,40 +36,37 @@ def get_border_up(piece)
     return piece[0]
 end
 
-def transform_neighbour(piece, piece_neighbour, ox, oy)
+def transform(piece, operation)
+    if operation == 'r'
+        return rotate_right(piece)
+    elsif operation == 'm'
+        return mirror(piece)
+    end
 
+    return piece
+end
+
+def transform_neighbour(piece, piece_neighbour, ox, oy)
     piece_border = nil
     piece_neighbour_border = nil
 
     if ox > 0
         piece_border = get_border_right(piece)
-    end
-
-    if oy > 0
+    elsif oy > 0
         piece_border = get_border_down(piece)
     end
 
     ['n', 'r', 'r', 'r', 'm', 'r', 'r', 'r'].each do |operations|
         operations.chars.each do |operation|
-            if operation == 'r'
-                piece_neighbour = rotate_right(piece_neighbour)
-            end
-
-            if operation == 'm'
-                piece_neighbour = mirror(piece_neighbour)
-            end
+            piece_neighbour = transform(piece_neighbour, operation)
 
             if ox > 0
                 piece_neighbour_border = get_border_left(piece_neighbour)
-            end
-
-            if oy > 0
+            elsif oy > 0
                 piece_neighbour_border = get_border_up(piece_neighbour)
             end
 
-            if piece_neighbour_border == piece_border
-                return piece_neighbour
-            end
+            return piece_neighbour if piece_neighbour_border == piece_border
         end
     end
 
@@ -116,41 +85,23 @@ def already_allocated(pieces, neighbour_key, x, y)
 end
 
 def get_top_left_corner(corners, tiles_pieces, tiles_neighbours, square_side_size)
-    corners = tiles_neighbours.select { |k, v| v.size == 2}
+    tiles_neighbours.select { |k, v| v.size == 2 }.each do |corner|
+        pieces = { 0 => { 0 => [corner[0], tiles_pieces[corner[0]]], 1 => nil }, 1 => { 0 => nil } }
 
-    corners.each do |corner|
-        pieces = {}
-        pieces[0] = {}
-        pieces[1] = {}
-        pieces[0][0] = [corner[0], tiles_pieces[corner[0]]]
-        pieces[0][1] = nil
-        pieces[1][0] = nil
+        tiles_neighbours[pieces[0][0][0]].each do |neighbour_key|
+            [[1, 0], [0, 1]].each do |ox, oy|
+                if not pieces[oy][ox]
+                    transformed = transform_neighbour(pieces[0][0][1], tiles_pieces[neighbour_key], ox, oy)
 
-        x = 0
-        y = 0
-
-        if pieces[y][x] 
-            key = pieces[y][x][0]
-            piece = pieces[y][x][1]
-            neighbours_keys = tiles_neighbours[key]
-
-            neighbours_keys.each do |neighbour_key|
-                next if already_allocated(pieces, neighbour_key, x, y)
-
-                [[1, 0], [0, 1]].each do |ox, oy|
-                    if not pieces[y + oy][x + ox]
-                        transformed = transform_neighbour(piece, tiles_pieces[neighbour_key], ox, oy)
-
-                        if transformed
-                            pieces[y + oy][x + ox] = [neighbour_key, transformed]
-                            break
-                        end
+                    if transformed
+                        pieces[oy][ox] = [neighbour_key, transformed]
+                        break
                     end
                 end
             end
-
-            return corner if pieces[0][1] and pieces[1][0]
         end
+
+        return corner if pieces[0][1] and pieces[1][0]
     end
 end
 
@@ -158,27 +109,66 @@ def remove_borders(piece)
     piece[1..-2].map { |c| c[1..-2] }
 end
 
-corners = tiles_neighbours.select { |k, v| v.size == 2}
+def count_sea_monsters(piece, sea_monster)
+    monsters = 0
 
-square_side_size = Math.sqrt(tiles.size).to_i
+    sea_monster = sea_monster.map { |x| x.gsub(' ', '.') }
 
-pieces = {}
-square_side_size.times { |y| pieces[y] = {} }
+    width = sea_monster[0].size
+    height = sea_monster.size
 
-starter_square = get_top_left_corner(corners, tiles_pieces, tiles_neighbours, square_side_size)
+    (piece.size - height).times do |y|
+        (piece[y].size - width).times do |x|
+            if (0..height-1).all? { |oy| piece[y + oy][x..(x + width)].match(/^#{sea_monster[oy]}/)}
+                monsters += 1
+            end
+        end
+    end
 
-pieces[0][0] = [starter_square[0], tiles_pieces[starter_square[0]]]
+    return monsters
+end
 
-(square_side_size).times do |y|
-    (square_side_size).times do |x|
-        if pieces[y][x] 
+def get_tiles_neighbours(tiles)
+    visited = {}
+
+    tiles_neighbours = {}
+
+    tiles.keys.each do |key|
+        tiles_neighbours[key] = [] 
+
+        other_keys = tiles.keys.reject { |k| k == key  }
+
+        other_keys.each do |other_key|
+            if check_valid(tiles[key], tiles[other_key], visited)
+                tiles_neighbours[key].push other_key
+            end
+        end
+    end
+
+    return tiles_neighbours
+end
+
+def get_solved_puzzle(tiles, tiles_pieces)
+    tiles_neighbours = get_tiles_neighbours(tiles)
+
+    corners = tiles_neighbours.select { |k, v| v.size == 2 }
+
+    square_side_size = Math.sqrt(tiles.size).to_i
+
+    pieces = {}
+
+    square_side_size.times { |y| pieces[y] = {} }
+
+    top_left_corner = get_top_left_corner(corners, tiles_pieces, tiles_neighbours, square_side_size)[0]
+
+    pieces[0][0] = [top_left_corner, tiles_pieces[top_left_corner]]
+
+    (square_side_size).times do |y|
+        (square_side_size).times do |x|
             key = pieces[y][x][0]
             piece = pieces[y][x][1]
-            neighbours_keys = tiles_neighbours[key]
 
-            keys_to_allocate = neighbours_keys
-
-            keys_to_allocate.each do |neighbour_key|
+            tiles_neighbours[key].each do |neighbour_key|
                 next if already_allocated(pieces, neighbour_key, x, y)
 
                 [[1, 0], [0, 1]].each do |ox, oy|
@@ -197,64 +187,49 @@ pieces[0][0] = [starter_square[0], tiles_pieces[starter_square[0]]]
             end
         end
     end
+
+    return pieces
 end
 
-width = pieces[0][0][1][0].size - 2
-height = pieces[0][0][1].size - 2
+def remove_borders_from_pieces(pieces, tiles)
+    width = pieces[0][0][1][0].size - 2
+    height = pieces[0][0][1].size - 2
 
-final_image = {}
-(square_side_size).times do |y|
-    (square_side_size).times do |x|
-        piece = remove_borders(pieces[y][x][1])
-        height.times do |py|
-            final_image[y*height + py] = {} if not final_image[y*height + py]
-            width.times do |px|
-                final_image[y*height + py][x*width + px] = piece[py][px]
-            end
-        end
-    end
-end
+    square_side_size = Math.sqrt(tiles.size).to_i
 
-final_piece = []
-final_image.each do |y, v|
-    final_piece.push v.sort_by { |k, vv| k }.map { |k, vv| vv }.join
-end
-
-def count_sea_monsters(piece, sea_monster)
-    monsters = 0
-
-    sea_monster = sea_monster.map { |x| x.gsub(' ', '.') }
-
-    width = sea_monster[0].size
-    height = sea_monster.size
-
-    (piece.size - height).times do |y|
-        (piece[y].size - width).times do |x|
-            substr_range = x..(x + width) 
-            if piece[y][substr_range].match(/^#{sea_monster[0]}/) and
-                piece[y+1][substr_range].match(/^#{sea_monster[1]}/) and
-                piece[y+2][substr_range].match(/^#{sea_monster[2]}/) and
-                monsters += 1
+    final_image = {}
+    (square_side_size).times do |y|
+        (square_side_size).times do |x|
+            piece = remove_borders(pieces[y][x][1])
+            height.times do |py|
+                final_image[y*height + py] = {} if not final_image[y*height + py]
+                width.times do |px|
+                    final_image[y*height + py][x*width + px] = piece[py][px]
+                end
             end
         end
     end
 
-    return monsters
+    return final_image.map { |y, v| v.sort_by { |k, vv| k }.map { |k, vv| vv }.join }
 end
+
+input = File.read(ARGV[0]).split("\n\n").map { |x| x.split("\n") }
+
+tiles = input 
+ .map { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
+ .to_h { |t, x| [t, [x[0], x[-1], x.map { |y| y.chars[0] }.join, x.map { |y| y.chars[-1] }.join]]}
+
+tiles_pieces = input.to_h { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
 
 sea_monster = [ "                  # ",
                 "#    ##    ##    ###",
                 " #  #  #  #  #  #   "]
 
+final_piece = remove_borders_from_pieces(get_solved_puzzle(tiles, tiles_pieces), tiles)
+
 ['n', 'r', 'r', 'r', 'm', 'r', 'r', 'r'].each do |operations|
     operations.chars.each do |operation|
-        if operation == 'r'
-            final_piece = rotate_right(final_piece)
-        end
-
-        if operation == 'm'
-            final_piece = mirror(final_piece)
-        end
+        final_piece = transform(final_piece, operation)
 
         sea_monster_number = count_sea_monsters(final_piece, sea_monster)
 
@@ -263,4 +238,3 @@ sea_monster = [ "                  # ",
         end
     end
 end
-
