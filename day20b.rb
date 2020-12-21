@@ -17,23 +17,23 @@ def mirror(piece)
 end
 
 def rotate_right(piece)
-    return piece.map { |x| x.chars }.transpose.map { |c| c.reverse }.map { |c| c.join }
+    piece.map { |x| x.chars }.transpose.map { |c| c.reverse }.map { |c| c.join }
 end
 
 def get_border_right(piece)
-    return piece.map { |y| y.chars[-1] }.join
+    piece.map { |y| y.chars[-1] }.join
 end
 
 def get_border_down(piece)
-    return piece[-1]
+    piece[-1]
 end
 
 def get_border_left(piece)
-    return piece.map { |y| y.chars[0] }.join
+    piece.map { |y| y.chars[0] }.join
 end
 
 def get_border_up(piece)
-    return piece[0]
+    piece[0]
 end
 
 def transform(piece, operation)
