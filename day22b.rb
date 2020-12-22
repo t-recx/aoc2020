@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 
-def game(p1_stack, p2_stack, rounds = {})
-    winner = nil
+def game(p1_stack, p2_stack, rounds = {}, is_sub = false)
+    player1_win = nil
 
     loop do 
         round = rounds[p1_stack]
 
         if round and round[p2_stack]
-            winner = 1
+            player1_win = true
             break
         else
             if not round
@@ -21,32 +21,28 @@ def game(p1_stack, p2_stack, rounds = {})
             p2_card = p2_stack.shift
 
             if p1_stack.size >= p1_card and p2_stack.size >= p2_card 
-                winner, _ = game(p1_stack.take(p1_card), p2_stack.take(p2_card), {})
-            else
-                if p1_card > p2_card
-                    winner = 1
-                else
-                    winner = 2
-                end
+                player1_win = game(p1_stack.take(p1_card), p2_stack.take(p2_card), {}, true)
+            else 
+                player1_win = p1_card > p2_card
             end
 
-            if winner == 1
+            if player1_win
                 p1_stack.push p1_card
                 p1_stack.push p2_card
-            elsif winner == 2
+            else
                 p2_stack.push p2_card
                 p2_stack.push p1_card
             end
 
-            break if p1_stack.size == 0 or p2_stack.size == 0
+            break if p1_stack.empty? or p2_stack.empty?
         end
     end
 
-    return [winner, winner == 1 ? p1_stack : p2_stack]
+    return player1_win if is_sub
+
+    return player1_win ? p1_stack : p2_stack
 end
 
 p1_stack, p2_stack = File.read(ARGV[0]).split("\n\n").map { |x| x.split("\n")[1..-1].map(&:to_i) }
 
-_, stack = game(p1_stack, p2_stack)
-
-p stack.reverse.each_with_index.map { |x, i| x * (i + 1) }.sum
+p game(p1_stack, p2_stack).reverse.each_with_index.map { |x, i| x * (i + 1) }.sum

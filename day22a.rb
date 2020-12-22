@@ -14,7 +14,7 @@ loop do
         p2_stack.push p1_card
     end
 
-    break if p1_stack.size == 0 or p2_stack.size == 0
+    break if p1_stack.empty? or p2_stack.empty?
 end
 
-p (p1_stack.size == 0 ? p2_stack : p1_stack).reverse.each_with_index.map { |x, i| x * (i + 1) }.sum
+p (p1_stack.empty? ? p2_stack : p1_stack).reverse.each_with_index.map { |x, i| x * (i + 1) }.sum
