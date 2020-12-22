@@ -7,20 +7,24 @@ def game(p1_stack, p2_stack, rounds = {})
         p1_stack_id = p1_stack.to_s
         p2_stack_id = p2_stack.to_s
 
-        if rounds[p1_stack.size] and rounds[p1_stack.size][p2_stack.size] and rounds[p1_stack.size][p2_stack.size][p1_stack_id] and rounds[p1_stack.size][p2_stack.size][p1_stack_id][p2_stack_id]
+        round = rounds[p1_stack_id]
+
+        if round and round[p2_stack_id]
             winner = 1
             break
         else
-            rounds[p1_stack.size] = {} unless rounds[p1_stack.size]
-            rounds[p1_stack.size][p2_stack.size] = {} unless rounds[p1_stack.size][p2_stack.size]
-            rounds[p1_stack.size][p2_stack.size][p1_stack_id] = {} unless rounds[p1_stack.size][p2_stack.size][p1_stack_id]
-            rounds[p1_stack.size][p2_stack.size][p1_stack_id][p2_stack_id] = true 
+            if not round
+                round = {}
+                rounds[p1_stack_id] = round
+            end
+
+            round[p2_stack_id] = true 
 
             p1_card = p1_stack.shift
             p2_card = p2_stack.shift
 
             if p1_stack.size >= p1_card and p2_stack.size >= p2_card 
-                winner, _ = game(p1_stack.take(p1_card), p2_stack.take(p2_card), [])
+                winner, _ = game(p1_stack.take(p1_card), p2_stack.take(p2_card), {})
             else
                 if p1_card > p2_card
                     winner = 1
