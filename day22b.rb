@@ -4,21 +4,18 @@ def game(p1_stack, p2_stack, rounds = {})
     winner = nil
 
     loop do 
-        p1_stack_id = p1_stack.to_s
-        p2_stack_id = p2_stack.to_s
+        round = rounds[p1_stack]
 
-        round = rounds[p1_stack_id]
-
-        if round and round[p2_stack_id]
+        if round and round[p2_stack]
             winner = 1
             break
         else
             if not round
                 round = {}
-                rounds[p1_stack_id] = round
+                rounds[p1_stack] = round
             end
 
-            round[p2_stack_id] = true 
+            round[p2_stack] = true 
 
             p1_card = p1_stack.shift
             p2_card = p2_stack.shift
