@@ -15,7 +15,7 @@ end
 offset = 0
 ids = {}
 
-File.readlines(ARGV[0]).map(&:strip)[1].split(',').map { |id| id }
+File.readlines(ARGV[0])[1].split(',')
 .each do |token|
     if token != 'x' 
         ids[token.to_i] = offset > 0 ? token.to_i - offset : 0
