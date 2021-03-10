@@ -21,7 +21,7 @@ def part_a(lines)
     .map { |id| id.to_i }
     .map { |id| [id, id * (departing_ts / id + 1) - departing_ts] }
     .sort_by { |_, waiting_time| waiting_time }[0]
-    .reduce(1, :*)
+    .reduce(:*)
 end
 
 def part_b(lines)

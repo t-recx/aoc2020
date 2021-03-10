@@ -14,4 +14,4 @@ p [[1,1],[3,1],[5,1],[7,1],[1,2]]
             .each_with_index
             .count { |line, i| i % down == 0 && line[(i / down) * right % w] == '#' }
     }
-    .reduce(1, :*)
+    .reduce(:*)
