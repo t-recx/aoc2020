@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+def get_valid_passports(input)
+    input.select { |line| ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'].all? { |key| line.include? key } }
+end
+
 def valid?(key, value) 
     if key == 'byr'
         value.to_i.between? 1920, 2002
@@ -23,9 +27,8 @@ def valid?(key, value)
     end
 end
 
-puts File
-    .read(ARGV[0])
-    .split("\n\n")
-    .select { |line| ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'].all? { |key| line.include? key } }
-    .select { |line| line.split.all? { |kvp| valid?(*kvp.split(':')) } }
-    .count()
+valid_passports = get_valid_passports(File.read(ARGV[0]).split("\n\n"))
+
+p valid_passports.count
+
+p valid_passports.count { |line| line.split.all? { |kvp| valid?(*kvp.split(':')) } }
