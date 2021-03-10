@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 
-input = File.read(ARGV[0]).split("\n\n")
+input = File.read(ARGV[0])
+    .gsub('8: 42', '8: 42 | 42 8')
+    .gsub('11: 42 31', '11: 42 31 | 42 11 31')
+    .split("\n\n")
 
 def get_message_count(rules, messages, imax)
     last_message_count = 0
