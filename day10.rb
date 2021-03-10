@@ -31,9 +31,28 @@ def get_possible_arrangement_count(previous, jolts, target, visited = [])
         break if previous > target
     end
 
-    return count
+    count
+end
+
+def differences(jolts)
+    one, three = 0, 1
+    previous = 0
+
+    jolts.each do |jolt|
+        difference = jolt - previous 
+
+        if difference == 1 || difference == 3
+            one += 1 if difference == 1
+            three += 1 if difference == 3
+            previous = jolt 
+        end
+    end
+
+    one * three
 end
 
 jolts = File.readlines(ARGV[0]).map(&:strip).map(&:to_i).sort
+
+p differences(jolts)
 
 p get_possible_arrangement_count(0, jolts, jolts[-1], [])
