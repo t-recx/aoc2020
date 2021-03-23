@@ -1,15 +1,7 @@
 #!/usr/bin/env ruby
 
-def check_valid(tile, neighbour, visited)
-    visited[tile] = {} if not visited[tile]
-    visited[neighbour] = {} if not visited[neighbour]
-
-    if visited[tile][neighbour] == nil 
-        visited[tile][neighbour] = tile.any? { |a| neighbour.any? {|b| a == b}} || tile.map { |s| s.reverse }.any? { |a| neighbour.any? {|b| a == b}}
-        visited[neighbour][tile] = visited[tile][neighbour]
-    end
-
-    visited[tile][neighbour]
+def pieces_interlock(tile, neighbour)
+    [tile, mirror(tile)].any? { |t| t.any? { |border| neighbour.any? { |nborder| border == nborder } } }
 end
 
 def mirror(piece)
@@ -131,8 +123,6 @@ def count_sea_monsters(piece, sea_monster)
 end
 
 def get_tiles_neighbours(tiles)
-    visited = {}
-
     tiles_neighbours = {}
 
     tiles.keys.each do |key|
@@ -141,7 +131,7 @@ def get_tiles_neighbours(tiles)
         other_keys = tiles.keys.reject { |k| k == key  }
 
         other_keys.each do |other_key|
-            if check_valid(tiles[key], tiles[other_key], visited)
+            if pieces_interlock(tiles[key], tiles[other_key])
                 tiles_neighbours[key].push other_key
             end
         end
@@ -216,26 +206,27 @@ def remove_borders_from_pieces(pieces, tiles)
     final_image.map { |_, v| v.sort_by { |k, _| k }.map { |_, vv| vv }.join }
 end
 
-def part_a(tiles)
-    visited = {}
+def is_corner(key, tiles)
+    number_tiles_interlocked = 0
 
+    (tiles.keys - [key]).each do |other_key|
+        number_tiles_interlocked += 1 if pieces_interlock(tiles[key], tiles[other_key])
+
+        break if number_tiles_interlocked > 2
+    end
+
+    return number_tiles_interlocked == 2
+end
+
+def part_a(tiles)
     corners = {}
 
-    tiles.keys
-    .each do |key|
-        other_keys = tiles.keys.reject { |k| k == key  }
+    tiles.keys.each do |key|
+        if is_corner(key, tiles)
+            corners[key] = tiles[key] 
 
-        possible = 0
-
-        other_keys.each do |other_key|
-            possible += 1 if check_valid(tiles[key], tiles[other_key], visited)
-
-            break if possible > 2
+            return corners.keys.reduce(:*) if corners.size == 4
         end
-
-        corners[key] = tiles[key] if possible == 2
-
-        return corners.keys.reduce(:*) if corners.size == 4
     end
 end
 
@@ -259,11 +250,15 @@ def part_b(tiles, input)
     end
 end
 
+def get_piece_borders(piece)
+    [get_border_up(piece), get_border_down(piece), get_border_left(piece), get_border_right(piece)]
+end
+
 input = File.read(ARGV[0]).split("\n\n").map { |x| x.split("\n") }
 
 tiles = input
         .map { |x| [x[0].sub('Tile ', '').sub(':', '').to_i, x[1..-1]]}
-        .to_h { |t, x| [t, [x[0], x[-1], x.map { |y| y.chars[0] }.join, x.map { |y| y.chars[-1] }.join]]}
+        .to_h { |t, x| [t, get_piece_borders(x)]}
 
 p part_a(tiles)
 p part_b(tiles, input)
